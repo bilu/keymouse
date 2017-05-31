@@ -1,4 +1,4 @@
-package pl.biltec;
+package pl.biltec.keymouse.ui.swing;
 
 /*
  * Copyright (c) 2012, Oracle and/or its affiliates. All rights reserved.
@@ -37,6 +37,10 @@ import javax.swing.*;
 import java.awt.*;
 
 public class TransparentFrame extends JFrame {
+
+	private static final Color[] COLORS = {Color.BLACK, Color.CYAN, Color.RED, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.WHITE};
+	private int colorIndex = 0;
+
 	public TransparentFrame() {
 		super("TranslucentWindow");
 		setLayout(new GridBagLayout());
@@ -45,11 +49,18 @@ public class TransparentFrame extends JFrame {
 		setSize(300,200);
 		setLocationRelativeTo(null);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		//Add a sample button.
-//		add(new JButton("I am a Button"));
 	}
 
+
+	public static Color getColor(int i) {
+		return COLORS[i % COLORS.length];
+	}
+
+	public void nextColor() {
+		getContentPane().setBackground(getColor(colorIndex++));
+	}
+
+	//TODO remove
 	public static void main(String[] args) {
 //		// Determine if the GraphicsDevice supports translucency.
 //		GraphicsEnvironment ge =

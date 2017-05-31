@@ -1,4 +1,4 @@
-package pl.biltec;
+package pl.biltec.keymouse.domain;
 
 enum Orientation {
 

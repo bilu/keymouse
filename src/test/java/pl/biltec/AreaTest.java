@@ -2,6 +2,7 @@ package pl.biltec;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import pl.biltec.keymouse.domain.Area;
 
 public class AreaTest {
 
