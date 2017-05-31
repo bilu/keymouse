@@ -2,10 +2,17 @@ package pl.biltec;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.util.Random;
 
 public class KeyMouseAPI {
+
+	static int ITERATION = 0;
+	static Area area;
+	static Robot robot;
 
 	public static final Color[] COLORS = {Color.BLACK, Color.CYAN, Color.RED, Color.GREEN, Color.YELLOW, Color.ORANGE, Color.WHITE};
 
@@ -17,6 +24,10 @@ public class KeyMouseAPI {
 
 	public static void main(String[] args) throws AWTException, InterruptedException, IOException {
 
+
+		//potrzbne do transfluenta
+		JFrame.setDefaultLookAndFeelDecorated(true);
+
 		for (int i = 0; i < COLORS.length; i++) {
 			System.out.println("i=" + i + " -> " + COLORS[i]);
 
@@ -25,12 +36,92 @@ public class KeyMouseAPI {
 
 		System.out.println(MouseInfo.getPointerInfo().getLocation());
 
-		JFrame frame = new JFrame();
+
+		JFrame.setDefaultLookAndFeelDecorated(true);
+
+
+		JFrame frame = new TransparentFrame();
+
+//		JPanel p = new JPanel();
+//		p.setOpaque(false);
+//		p.setLayout(null);
 		// Set's the window to be "always on top"
-		frame.setAlwaysOnTop(true);
+//		frame.setAlwaysOnTop(true);
 //		frame.setUndecorated(true);
-		frame.getContentPane().setBackground(Color.LIGHT_GRAY);
+//		frame.getContentPane().setBackground(Color.LIGHT_GRAY);
+		frame.setOpacity(0.55f);
+		// Display the window.
 		frame.setVisible(true);
+
+		//titile bar
+		frame.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				try {
+					switch (e.getKeyCode()) {
+						case 74: //'k':
+							System.out.println("ok > " + e.getKeyCode() + ", " + e.getKeyChar() + ", " + e.getKeyLocation() + ", " + e.getExtendedKeyCode());
+
+							area = area.fromLeftTop(0);
+							makeAMove(frame, robot, area, ITERATION++);
+							break;
+						case 75: //'j':
+							System.out.println("ok > " + e.getKeyCode() + ", " + e.getKeyChar() + ", " + e.getKeyLocation() + ", " + e.getExtendedKeyCode());
+
+							area = area.fromLeftTop(1);
+							makeAMove(frame, robot, area, ITERATION++);
+							break;
+						case 78: //'n':
+							System.out.println("ok > " + e.getKeyCode() + ", " + e.getKeyChar() + ", " + e.getKeyLocation() + ", " + e.getExtendedKeyCode());
+							//minimize
+							frame.dispose();
+							//action
+							robot.mousePress(InputEvent.BUTTON1_MASK);
+							robot.mouseRelease(InputEvent.BUTTON1_MASK);
+							//restore
+//							frame.setState(Frame.NORMAL);
+							break;
+						case 77: //'m':
+							System.out.println("ok > " + e.getKeyCode() + ", " + e.getKeyChar() + ", " + e.getKeyLocation() + ", " + e.getExtendedKeyCode());
+							//minimize
+							frame.dispose();
+//							frame.setState(Frame.ICONIFIED);
+							//action
+							robot.mousePress(InputEvent.BUTTON2_MASK);
+							robot.mouseRelease(InputEvent.BUTTON2_MASK);
+							//restore
+//							frame.setState(Frame.NORMAL);
+							break;
+						case 44: //',':
+							System.out.println("ok > " + e.getKeyCode() + ", " + e.getKeyChar() + ", " + e.getKeyLocation() + ", " + e.getExtendedKeyCode());
+							//minimize
+							frame.dispose();
+							//action
+							robot.mousePress(InputEvent.BUTTON3_MASK);
+							robot.mouseRelease(InputEvent.BUTTON3_MASK);
+							//restore
+//							frame.setState(Frame.NORMAL);
+							break;
+
+						case 8: //backspace
+							System.out.println("ok > " + e.getKeyCode() + ", " + e.getKeyChar() + ", " + e.getKeyLocation() + ", " + e.getExtendedKeyCode());
+
+							area = area.back();
+							makeAMove(frame, robot, area, ITERATION++);
+							break;
+						case 27: //ESC
+							System.out.println("x = KONIEC");
+							frame.dispose();
+							break;
+						default:
+							System.out.println("undefined > " + e.getKeyCode() + ", " + e.getKeyChar() + ", " + e.getKeyLocation() + ", " + e.getExtendedKeyCode());
+
+					}
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			}
+		});
 //		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Already there
 //		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 //		frame.setUndecorated(true);
@@ -42,10 +133,10 @@ public class KeyMouseAPI {
 		System.out.println(width);
 //		System.out.println(MouseInfo.getPointerInfo().getLocation());
 
-		Robot robot = new Robot();
 
-		int splitLevel = 8;
-		Area area = new Area(1920, 0, 1920, 1080, splitLevel);
+		robot = new Robot();
+		int splitLevel = 2;
+		area = new Area(1920, 0, 1920, 1080, splitLevel);
 		area2Mouse(area, robot);
 		area2Frame(area, frame, 0);
 		System.out.println(area);
@@ -67,13 +158,13 @@ public class KeyMouseAPI {
 ////		area = makeAMove(frame, robot, 8, area, 6);
 
 
-		//2 dwukropek przy run'ie
-		area = makeAMove(frame, robot, 0, area, 1);
-		area = makeAMove(frame, robot, 8, area, 2);
-		area = makeAMove(frame, robot, 3, area, 3);
-//		area = makeAMove(frame, robot, 5, area, 4);
-//		area = makeAMove(frame, robot, 0, area, 5);
-//		area = makeAMove(frame, robot, 8, area, 6);
+//		//2 dwukropek przy run'ie
+//		area = makeAMove(frame, robot, 0, area, 1);
+//		area = makeAMove(frame, robot, 8, area, 2);
+//		area = makeAMove(frame, robot, 3, area, 3);
+////		area = makeAMove(frame, robot, 5, area, 4);
+////		area = makeAMove(frame, robot, 0, area, 5);
+////		area = makeAMove(frame, robot, 8, area, 6);
 
 
 		System.out.println(MouseInfo.getPointerInfo().getLocation());
@@ -88,19 +179,15 @@ public class KeyMouseAPI {
 //		frame.setVisible( true );
 //		frame.dispose();
 
-
-		Thread.sleep(1_000);
-		frame.dispose();
-
 	}
 
-	private static Area makeAMove(JFrame frame, Robot robot, int position, Area area, int i) throws InterruptedException {
-		area = area.fromLeftTop(position);
+	private static void makeAMove(JFrame frame, Robot robot, Area area, int i) throws InterruptedException {
+//		area = area.fromLeftTop(position);
 		area2Mouse(area, robot);
 		area2Frame(area, frame, i);
 		System.out.println(i + ". " + area + " color " + frame.getContentPane().getBackground());
-		Thread.sleep(1_000);
-		return area;
+//		Thread.sleep(1_000);
+//		return area;
 	}
 
 

@@ -1,5 +1,7 @@
 package pl.biltec;
 
+import java.util.Optional;
+
 public class Area {
 
 	private int top;
@@ -10,6 +12,7 @@ public class Area {
 	private int mouseY;
 	private int splitLevel;
 	private Orientation orientation;
+	private Optional<Area> parent = Optional.empty();
 
 
 	public Area(int left, int top, int width, int height, int splitLevel) {
@@ -24,6 +27,12 @@ public class Area {
 		this.orientation = (width > height) ? Orientation.LANDSCAPE : Orientation.PORTRAIT;
 	}
 
+	Area(int left, int top, int width, int height, int splitLevel, Area parent) {
+		//TODO assert
+		this(left, top, width, height, splitLevel);
+		this.parent = Optional.of(parent);
+	}
+
 	/**
 	 * @param position <0; splitLevel)
 	 * @return
@@ -34,12 +43,17 @@ public class Area {
 		if (orientation == Orientation.LANDSCAPE) {
 			int newWidth = width / splitLevel;
 			int newLeft = left + newWidth * normPosition;
-			return new Area(newLeft, top, newWidth, height, splitLevel);
+			return new Area(newLeft, top, newWidth, height, splitLevel, this);
 		} else {
 			int newHeight = height / splitLevel;
 			int newTop = top + newHeight * normPosition;
-			return new Area(left, newTop, width, newHeight, splitLevel);
+			return new Area(left, newTop, width, newHeight, splitLevel, this);
 		}
+	}
+
+
+	public Area back() {
+		return parent.orElse(this);
 	}
 
 
@@ -109,6 +123,7 @@ public class Area {
 				", mouseY=" + mouseY +
 				", splitLevel=" + splitLevel +
 				", orientation=" + orientation +
+				", parent=" + parent +
 				'}';
 	}
 }
