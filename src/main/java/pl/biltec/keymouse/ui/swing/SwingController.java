@@ -61,9 +61,7 @@ public class SwingController {
 					public void keyPressed(KeyEvent e) {
 
 
-						pl.biltec.keymouse.application.Action action = api.findAction(new IntegerKey(e.getKeyCode()));
-
-
+						pl.biltec.keymouse.application.Action action = api.findAction(new IntegerKey(e.getKeyCode())).orElse(BasicActions.UNDEFINED);
 
 
 						Robot robot = null;
@@ -75,31 +73,35 @@ public class SwingController {
 						try {
 							if (action == BasicActions.UNDEFINED) {
 								System.out.println("undefined > " + e.getKeyCode() + ", " + e.getKeyChar() + ", " + e.getKeyLocation());
-
+							} else if (action instanceof Move) {
+								Move move = (Move) action;
+								System.out.println("move:" + move);
+								area = area.move(move.vertical(), move.horizontal());
+								makeAMove(frame, robot, area);
 							} else if (action == BasicActions.EXIT) {
 								System.out.println("x = KONIEC");
 								frame.dispose();
 							} else if (action == BasicActions.UNDO) {
 								area = area.back();
 								makeAMove(frame, robot, area);
-							} else if (action.equals(new IntegerMove(0))) {
-								area = area.fromLeftTop(0);
-								makeAMove(frame, robot, area);
-							} else if (action.equals(new IntegerMove(1))) {
-								area = area.fromLeftTop(1);
-								makeAMove(frame, robot, area);
 							} else if (action == BasicActions.MOUSE_LEFT_CLICK) {
 								frame.dispose();
-								robot.mousePress(InputEvent.BUTTON1_MASK);
-								robot.mouseRelease(InputEvent.BUTTON1_MASK);
+								robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
+								robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
 							} else if (action == BasicActions.MOUSE_MIDDLE_CLICK) {
 								frame.dispose();
-								robot.mousePress(InputEvent.BUTTON3_MASK);
-								robot.mouseRelease(InputEvent.BUTTON3_MASK);
+								robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
+								robot.mouseRelease(InputEvent.BUTTON3_DOWN_MASK);
 							} else if (action == BasicActions.MOUSE_RIGHT_CLICK) {
 								frame.dispose();
-								robot.mousePress(InputEvent.BUTTON2_MASK);
-								robot.mouseRelease(InputEvent.BUTTON2_MASK);
+								robot.mousePress(InputEvent.BUTTON2_DOWN_MASK);
+								robot.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
+							} else if (action == BasicActions.MOUSE_SCROLL_DOWN) {
+								frame.dispose();
+								robot.mouseWheel(1);
+							} else if (action == BasicActions.MOUSE_SCROLL_UP) {
+								frame.dispose();
+								robot.mouseWheel(-1);
 							} else {
 								System.out.println("else action=" + action);
 							}
@@ -118,11 +120,12 @@ public class SwingController {
 
 
 //				robot = new Robot();
-				int splitLevel = 2;
+				int splitHorizontal = 3;
+				int splitVertical = 3;
 				//2 ekrany
-//		area = new Area(1920, 0, 1920, 1080, splitLevel);
+//		area = new Area(1920, 0, 1920, 1080, splitHorizontal);
 				//tylko laptop
-				area = new Area(0, 0, 1920, 1080, splitLevel);
+				area = new Area(0, 0, 1920, 1080, splitHorizontal, splitVertical);
 //				area2Mouse(area, robot);
 				area2Frame(area, frame);
 				System.out.println(area);
@@ -138,7 +141,7 @@ public class SwingController {
 	private static void makeAMove(JFrame frame, Robot robot, Area area) throws InterruptedException {
 		area2Mouse(area, robot);
 		area2Frame(area, frame);
-		((TransparentFrame)frame).nextColor();
+		((TransparentFrame) frame).nextColor();
 		System.out.println(area + " color " + frame.getContentPane().getBackground());
 	}
 

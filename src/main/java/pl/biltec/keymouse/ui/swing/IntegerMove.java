@@ -3,14 +3,34 @@ package pl.biltec.keymouse.ui.swing;
 import pl.biltec.keymouse.application.Move;
 
 public class IntegerMove implements Move {
-	private int number;
+	private int horizontal;
+	private int vertical;
 
-	public IntegerMove(int number) {
-		this.number = number;
+	public IntegerMove(int horizotal, int vertical) {
+		this.horizontal = horizotal;
+		this.vertical = vertical;
 	}
 
-	public int getNumber() {
-		return number;
+	public int getHorizontal() {
+		return horizontal;
+	}
+
+	@Override
+	public int vertical() {
+		return vertical;
+	}
+
+	@Override
+	public int horizontal() {
+		return horizontal;
+	}
+
+	@Override
+	public String toString() {
+		return "IntegerMove{" +
+				"horizontal=" + horizontal +
+				", vertical=" + vertical +
+				'}';
 	}
 
 	@Override
@@ -20,21 +40,15 @@ public class IntegerMove implements Move {
 
 		IntegerMove that = (IntegerMove) o;
 
-		return number == that.number;
+		if (horizontal != that.horizontal) return false;
+		return vertical == that.vertical;
 
-	}
-
-	@Override
-	public String toString() {
-		return "IntegerMove{" +
-				"number=" + number +
-				'}';
 	}
 
 	@Override
 	public int hashCode() {
-
-
-		return number;
+		int result = horizontal;
+		result = 31 * result + vertical;
+		return result;
 	}
 }

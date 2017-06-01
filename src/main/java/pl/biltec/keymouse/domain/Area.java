@@ -10,12 +10,12 @@ public class Area {
 	private int height;
 	private int mouseX;
 	private int mouseY;
-	private int splitLevel;
-	private Orientation orientation;
+	private int splitHorizontal;
+	private int splitVertical;
 	private Optional<Area> parent = Optional.empty();
 
 
-	public Area(int left, int top, int width, int height, int splitLevel) {
+	public Area(int left, int top, int width, int height, int splitHorizontal, int splitVertical) {
 		//TODO assert
 		this.top = top;
 		this.left = left;
@@ -23,32 +23,26 @@ public class Area {
 		this.height = height;
 		this.mouseX = left + width / 2;
 		this.mouseY = top + height / 2;
-		this.splitLevel = splitLevel;
-		this.orientation = (width > height) ? Orientation.LANDSCAPE : Orientation.PORTRAIT;
+		this.splitHorizontal = splitHorizontal;
+		this.splitVertical = splitVertical;
 	}
 
-	Area(int left, int top, int width, int height, int splitLevel, Area parent) {
+	Area(int left, int top, int width, int height, int splitHorizontal, int splitVertical, Area parent) {
 		//TODO assert
-		this(left, top, width, height, splitLevel);
+		this(left, top, width, height, splitHorizontal, splitVertical);
 		this.parent = Optional.of(parent);
 	}
 
-	/**
-	 * @param position <0; splitLevel)
-	 * @return
-	 */
-	public Area fromLeftTop(int position) {
-		int normPosition = position % splitLevel;
+	public Area move(int vertical, int horizontal) {
+		int nVertical = vertical % splitVertical;
+		int nHorizontal = horizontal % splitHorizontal;
 
-		if (orientation == Orientation.LANDSCAPE) {
-			int newWidth = width / splitLevel;
-			int newLeft = left + newWidth * normPosition;
-			return new Area(newLeft, top, newWidth, height, splitLevel, this);
-		} else {
-			int newHeight = height / splitLevel;
-			int newTop = top + newHeight * normPosition;
-			return new Area(left, newTop, width, newHeight, splitLevel, this);
-		}
+		int newWidth = width / splitHorizontal;
+		int newHeight = height / splitVertical;
+		int newLeft = left + newWidth * nHorizontal;
+		int newTop = top + newHeight * nVertical;
+
+		return new Area(newLeft, newTop, newWidth, newHeight, splitHorizontal, splitVertical, this);
 	}
 
 
@@ -73,6 +67,15 @@ public class Area {
 		return mouseY;
 	}
 
+	public int getTop() {
+		return top;
+	}
+
+	public int getLeft() {
+		return left;
+	}
+
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
@@ -86,17 +89,10 @@ public class Area {
 		if (height != area.height) return false;
 		if (mouseX != area.mouseX) return false;
 		if (mouseY != area.mouseY) return false;
-		if (splitLevel != area.splitLevel) return false;
-		return orientation == area.orientation;
+		if (splitHorizontal != area.splitHorizontal) return false;
+		if (splitVertical != area.splitVertical) return false;
+		return parent != null ? parent.equals(area.parent) : area.parent == null;
 
-	}
-
-	public int getTop() {
-		return top;
-	}
-
-	public int getLeft() {
-		return left;
 	}
 
 	@Override
@@ -107,8 +103,9 @@ public class Area {
 		result = 31 * result + height;
 		result = 31 * result + mouseX;
 		result = 31 * result + mouseY;
-		result = 31 * result + splitLevel;
-		result = 31 * result + (orientation != null ? orientation.hashCode() : 0);
+		result = 31 * result + splitHorizontal;
+		result = 31 * result + splitVertical;
+		result = 31 * result + (parent != null ? parent.hashCode() : 0);
 		return result;
 	}
 
@@ -121,9 +118,10 @@ public class Area {
 				", height=" + height +
 				", mouseX=" + mouseX +
 				", mouseY=" + mouseY +
-				", splitLevel=" + splitLevel +
-				", orientation=" + orientation +
+				", splitHorizontal=" + splitHorizontal +
+				", splitVertical=" + splitVertical +
 				", parent=" + parent +
 				'}';
 	}
 }
+
