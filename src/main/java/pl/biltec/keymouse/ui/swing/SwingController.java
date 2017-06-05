@@ -21,6 +21,7 @@ public class SwingController {
 
 	public SwingController(KeyMouseAPI api) {
 		this.api = api;
+		this.area = api.getInitialArea();
 	}
 
 	public void start() {
@@ -40,28 +41,28 @@ public class SwingController {
 		//If translucent windows aren't supported,
 		//create an opaque window.
 		if (!isTranslucencySupported) {
+
 			System.out.println(
 					"Translucency is not supported, creating an opaque window");
 		}
 
-		// Create the GUI on the event-dispatching thread
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 
-				JFrame frame = new TransparentFrame();
-
-				frame.setOpacity(0.55f);
+				TransparentFrame frame = new TransparentFrame(area, api.getKeyToActionBinding());
+				frame.setOpacity(0.45f);
 				// Display the window.
 				frame.setVisible(true);
 
-				//titile bar
+				displayArea(area, frame);
+
 				frame.addKeyListener(new KeyAdapter() {
 					@Override
 					public void keyPressed(KeyEvent e) {
 
 
-						pl.biltec.keymouse.application.Action action = api.findAction(new IntegerKey(e.getKeyCode())).orElse(BasicActions.UNDEFINED);
+						pl.biltec.keymouse.application.Action action = api.findAction(new CodeKey(e.getKeyCode())).orElse(BasicActions.UNDEFINED);
 
 
 						Robot robot = null;
@@ -75,9 +76,10 @@ public class SwingController {
 								System.out.println("undefined > " + e.getKeyCode() + ", " + e.getKeyChar() + ", " + e.getKeyLocation());
 							} else if (action instanceof Move) {
 								Move move = (Move) action;
-								System.out.println("move:" + move);
-								area = area.move(move.vertical(), move.horizontal());
+								area = area.move(move.horizontal(), move.vertical());
 								makeAMove(frame, robot, area);
+								frame.updateArea(area);
+
 							} else if (action == BasicActions.EXIT) {
 								System.out.println("x = KONIEC");
 								frame.dispose();
@@ -85,9 +87,10 @@ public class SwingController {
 								area = area.back();
 								makeAMove(frame, robot, area);
 							} else if (action == BasicActions.MOUSE_LEFT_CLICK) {
+								int button1DownMask = InputEvent.BUTTON1_DOWN_MASK;
 								frame.dispose();
-								robot.mousePress(InputEvent.BUTTON1_DOWN_MASK);
-								robot.mouseRelease(InputEvent.BUTTON1_DOWN_MASK);
+								robot.mousePress(button1DownMask);
+								robot.mouseRelease(button1DownMask);
 							} else if (action == BasicActions.MOUSE_MIDDLE_CLICK) {
 								frame.dispose();
 								robot.mousePress(InputEvent.BUTTON3_DOWN_MASK);
@@ -111,47 +114,25 @@ public class SwingController {
 						}
 					}
 				});
-
-
-				int height = MouseInfo.getPointerInfo().getDevice().getDisplayMode().getHeight();
-				int width = MouseInfo.getPointerInfo().getDevice().getDisplayMode().getWidth();
-				System.out.println(height);
-				System.out.println(width);
-
-
-//				robot = new Robot();
-				int splitHorizontal = 3;
-				int splitVertical = 3;
-				//2 ekrany
-//		area = new Area(1920, 0, 1920, 1080, splitHorizontal);
-				//tylko laptop
-				area = new Area(0, 0, 1920, 1080, splitHorizontal, splitVertical);
-//				area2Mouse(area, robot);
-				area2Frame(area, frame);
-				System.out.println(area);
-
-
-				System.out.println(MouseInfo.getPointerInfo().getLocation());
-
 			}
 
 		});
 	}
 
 	private static void makeAMove(JFrame frame, Robot robot, Area area) throws InterruptedException {
-		area2Mouse(area, robot);
-		area2Frame(area, frame);
-		((TransparentFrame) frame).nextColor();
-		System.out.println(area + " color " + frame.getContentPane().getBackground());
+		moveMouseToTheMiddleOfArea(area, robot);
+		displayArea(area, frame);
 	}
 
 
-	public static void area2Frame(Area area, JFrame frame) {
-		frame.setLocation(area.getLeft(), area.getTop());
-		frame.setSize(area.getWidth(), area.getHeight());
+	public static void displayArea(Area area, JFrame frame) {
+//		frame.setLocation(area.getLeft(), area.getTop());
+//		frame.setSize(area.getWidth(), area.getHeight());
+
+		frame.setBounds(area.getLeft(), area.getTop(), area.getWidth(), area.getHeight());
 	}
 
-	public static void area2Mouse(Area area, Robot robot) {
+	public static void moveMouseToTheMiddleOfArea(Area area, Robot robot) {
 		robot.mouseMove(area.getMouseX(), area.getMouseY());
 	}
 

@@ -2,12 +2,12 @@ package pl.biltec.keymouse.ui.swing;
 
 import pl.biltec.keymouse.application.Move;
 
-public class IntegerMove implements Move {
+public class MatrixMove implements Move {
 	private int horizontal;
 	private int vertical;
 
-	public IntegerMove(int horizotal, int vertical) {
-		this.horizontal = horizotal;
+	public MatrixMove(int horizontal, int vertical) {
+		this.horizontal = horizontal;
 		this.vertical = vertical;
 	}
 
@@ -27,7 +27,7 @@ public class IntegerMove implements Move {
 
 	@Override
 	public String toString() {
-		return "IntegerMove{" +
+		return "MatrixMove{" +
 				"horizontal=" + horizontal +
 				", vertical=" + vertical +
 				'}';
@@ -38,7 +38,7 @@ public class IntegerMove implements Move {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		IntegerMove that = (IntegerMove) o;
+		MatrixMove that = (MatrixMove) o;
 
 		if (horizontal != that.horizontal) return false;
 		return vertical == that.vertical;

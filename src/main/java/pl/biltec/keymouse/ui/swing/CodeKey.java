@@ -2,11 +2,11 @@ package pl.biltec.keymouse.ui.swing;
 
 import pl.biltec.keymouse.application.Key;
 
-public class IntegerKey implements Key {
+public class CodeKey implements Key {
 
 	private int code;
 
-	public IntegerKey(int code) {
+	public CodeKey(int code) {
 		this.code = code;
 	}
 
@@ -19,7 +19,7 @@ public class IntegerKey implements Key {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		IntegerKey that = (IntegerKey) o;
+		CodeKey that = (CodeKey) o;
 
 		return code == that.code;
 

@@ -33,7 +33,12 @@ public class Area {
 		this.parent = Optional.of(parent);
 	}
 
-	public Area move(int vertical, int horizontal) {
+	public Area move(int horizontal, int vertical) {
+
+		if (width == 0 && height == 0) {
+			return this;
+		}
+
 		int nVertical = vertical % splitVertical;
 		int nHorizontal = horizontal % splitHorizontal;
 
@@ -45,6 +50,13 @@ public class Area {
 		return new Area(newLeft, newTop, newWidth, newHeight, splitHorizontal, splitVertical, this);
 	}
 
+	/**
+	 * @return 0 for first level, 1 for next, ...
+	 */
+	public int level() {
+		//TODO optimize
+		return parent.map($ -> 1 + $.level()).orElse(0);
+	}
 
 	public Area back() {
 		return parent.orElse(this);
@@ -75,6 +87,13 @@ public class Area {
 		return left;
 	}
 
+	public int getSplitHorizontal() {
+		return splitHorizontal;
+	}
+
+	public int getSplitVertical() {
+		return splitVertical;
+	}
 
 	@Override
 	public boolean equals(Object o) {
@@ -120,6 +139,7 @@ public class Area {
 				", mouseY=" + mouseY +
 				", splitHorizontal=" + splitHorizontal +
 				", splitVertical=" + splitVertical +
+				", level=" + level() +
 				", parent=" + parent +
 				'}';
 	}
